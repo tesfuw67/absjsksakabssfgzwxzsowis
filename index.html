@@ -2,232 +2,214 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rayab Copy Paste</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GlassHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Desain Latar Hitam Polos */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        .bg-fixed {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('https://iili.io/fp6HMOX.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* Menggelapkan sedikit agar teks putih menonjol */
+            z-index: -1;
+        }
+
         body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h2 { text-align: center; color: #00ff88; letter-spacing: 2px; }
-
-        /* Form Input Tambah Teks */
-        .add-box {
-            background: #111;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #333;
-            margin-bottom: 30px;
-        }
-
-        .add-box input, .add-box textarea, .add-box select {
-            width: 100%;
-            margin-bottom: 12px;
-            padding: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; color: #fff;
+            overflow-x: hidden;
             background: #000;
-            border: 1px solid #444;
-            color: #fff;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px; /* Mencegah zoom otomatis di iPhone */
         }
 
-        .add-box button {
-            width: 100%;
-            padding: 14px;
-            background: #00ff88;
-            color: #000;
-            border: none;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
+        /* Judul Transparan - Menyatu dengan Background */
+        h1 {
+            font-size: 3rem; font-weight: 800; text-align: center; margin: 40px 0 20px 0;
+            letter-spacing: -2px;
+            background: url('https://iili.io/fp6HMOX.jpg');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 1px rgba(255,255,255,0.5));
+            text-transform: uppercase;
         }
 
-        /* Filter & Search */
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+        /* Glass Panel - Beneran kayak kaca bening */
+        .glass-card {
+            width: 100%; max-width: 450px;
+            background: rgba(255, 255, 255, 0.03); /* Sangat tipis */
+            backdrop-filter: blur(25px) brightness(0.8) contrast(1.2);
+            -webkit-backdrop-filter: blur(25px) brightness(0.8) contrast(1.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px; padding: 25px; margin-bottom: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        #searchInput {
-            flex: 2;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: #111;
-            color: #fff;
+        input, textarea, select {
+            width: 100%; background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px; padding: 15px; margin-bottom: 12px;
+            color: #fff; font-size: 16px; outline: none;
         }
 
-        #categoryFilter {
-            flex: 1;
-            padding: 12px;
-            background: #222;
-            color: #fff;
-            border-radius: 8px;
-            border: 1px solid #333;
+        .btn-save {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            background: rgba(255, 255, 255, 0.1); 
+            color: #fff; font-weight: 800;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer; backdrop-filter: blur(10px);
+            transition: 0.3s;
         }
+        .btn-save:active { background: #fff; color: #000; }
 
-        /* Tampilan List */
-        .item-list {
-            display: grid;
-            gap: 15px;
+        /* Filter Tabs yang Nyatu */
+        .filter-group {
+            display: flex; gap: 10px; overflow-x: auto; width: 100%; 
+            max-width: 450px; margin-bottom: 25px;
+            scrollbar-width: none;
         }
+        .filter-group::-webkit-scrollbar { display: none; }
 
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; padding: 10px 20px; border-radius: 50px;
+            font-size: 11px; font-weight: 700; cursor: pointer; opacity: 0.6;
+        }
+        .filter-btn.active { background: rgba(255,255,255,0.9); color: #000; opacity: 1; }
+
+        /* Card List - Super Nyatu */
         .card {
-            background: #161616;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #00ff88;
-            animation: fadeIn 0.3s ease;
+            width: 100%; max-width: 450px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 25px; padding: 20px; margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            opacity: 0; transform: translateY(10px);
+            transition: 0.4s ease-out;
         }
+        .card.show { opacity: 1; transform: translateY(0); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tag { font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.9); color: #000; border: none;
+            padding: 10px 25px; border-radius: 12px; font-weight: 800; cursor: pointer;
         }
+        .btn-del { color: rgba(255, 255, 255, 0.2); font-size: 11px; cursor: pointer; border:none; background:none; }
 
-        .card h4 { margin: 0 0 8px 0; color: #00ff88; }
-        .card p { margin: 0; color: #ccc; font-size: 14px; white-space: pre-wrap; }
-        .cat-tag { font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 5px; display: block; }
-
-        .btn-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .copy-btn {
-            background: transparent;
-            color: #00ff88;
-            border: 1px solid #00ff88;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-
-        .del-btn {
-            background: transparent;
-            color: #ff4444;
-            border: 1px solid #ff4444;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
 
-    <h2>CP HUB</h2>
+    <div class="bg-fixed"></div>
+    <div class="bg-overlay"></div>
 
-    <div class="add-box">
-        <input type="text" id="newName" placeholder="Nama Judul (misal: Bio FB)">
-        <select id="newCat">
-            <option value="jailbreak">Pilih Kategori: jailbreak</option>
+    <h1>GLASSHUB</h1>
+
+    <div class="glass-card">
+        <input type="text" id="j" placeholder="Subject">
+        <select id="k">
             <option value="lockdown">lockdown</option>
-            <option value=" coding">coding</option>
-            <option value="unlock">unlock</option>
+            <option value="unlock lockdown">unlock lockdown</option>
+            <option value="text jailbreak">text jailbreak</option>
+            <option value="nsfw">nsfw</option>
         </select>
-        <textarea id="newText" rows="3" placeholder="Masukkan teks yang mau di-save..."></textarea>
-        <button onclick="addData()">SIMPAN TEKS</button>
+        <textarea id="t" rows="3" placeholder="Write something..."></textarea>
+        <button class="btn-save" onclick="add()">+ Archive Data</button>
+        <input type="text" id="searchBox" placeholder="Search..." onkeyup="search()" style="margin-top:15px; border-radius:50px; text-align:center; font-size:13px;">
     </div>
 
-    <div class="controls">
-        <input type="text" id="searchInput" onkeyup="filterData()" placeholder="Cari nama...">
-        <select id="categoryFilter" onchange="filterData()">
-            <option value="all">Semua</option>
-            <option value="jailbreak">jailbreak</option>
-            <option value="lockdown">lockdown</option>
-            <option value="coding">coding</option>
-            <option value="unlock">unlock</option>
-        </select>
+    <div class="filter-group">
+        <button class="filter-btn active" onclick="filterData('All', this)">All</button>
+        <button class="filter-btn" onclick="filterData('lockdown', this)">lockdown</button>
+        <button class="filter-btn" onclick="filterData('unlock lockdown', this)">unlock lockdown</button>
+        <button class="filter-btn" onclick="filterData('text jailbreak', this)">text jailbreak</button>
+        <button class="filter-btn" onclick="filterData('nsfw', this)">nsfw</button>
     </div>
 
-    <div id="container" class="item-list">
-        </div>
+    <div id="list" style="width:100%; max-width:450px;"></div>
 
     <script>
-        // Ambil data dari memori HP (LocalStorage) atau kosongkan jika belum ada
-        let database = JSON.parse(localStorage.getItem('myCopyData')) || [];
+        let db = JSON.parse(localStorage.getItem('glasshub_mono')) || [];
+        let currentFilter = 'All';
 
-        function displayData(data) {
-            const container = document.getElementById('container');
-            container.innerHTML = '';
-            
-            if (data.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#444;">Belum ada data. Silakan tambah di atas.</p>';
-            }
+        function render(filter = 'All', keyword = '') {
+            const div = document.getElementById('list');
+            div.innerHTML = '';
+            let filteredDb = filter === 'All' ? db : db.filter(item => item.cat === filter);
+            if(keyword) filteredDb = filteredDb.filter(item => item.name.toLowerCase().includes(keyword.toLowerCase()));
 
-            data.forEach((item, index) => {
-                container.innerHTML += `
-                    <div class="card">
-                        <span class="cat-tag">${item.cat}</span>
-                        <h4>${item.name}</h4>
-                        <p>${item.content}</p>
-                        <div class="btn-group">
-                            <button class="del-btn" onclick="deleteData(${index})">Hapus</button>
-                            <button class="copy-btn" onclick="copyText('${item.content.replace(/\n/g, "\\n")}')">Salin</button>
-                        </div>
+            filteredDb.forEach((item, i) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <span class="tag">${item.cat}</span>
+                    <h4 style="margin:0; font-weight:800;">${item.name}</h4>
+                    <p style="color:rgba(255,255,255,0.6); font-size:14px; margin-top:8px; line-height:1.5;">${item.text}</p>
+                    <div class="row">
+                        <button class="btn-del" onclick="del(${i})">Remove</button>
+                        <button class="btn-copy" onclick="copyAction(this, \`${item.text.replace(/`/g, "\\`").replace(/\$/g, "\\$")}\`)">COPY</button>
                     </div>
                 `;
+                div.appendChild(card);
+                setTimeout(() => card.classList.add('show'), i * 50);
             });
         }
 
-        function addData() {
-            const name = document.getElementById('newName').value;
-            const cat = document.getElementById('newCat').value;
-            const text = document.getElementById('newText').value;
-
-            if(name && text) {
-                database.push({ name: name, cat: cat, content: text });
-                saveAndRefresh();
-                // Reset Form
-                document.getElementById('newName').value = '';
-                document.getElementById('newText').value = '';
-            } else {
-                alert("Judul dan Teks harus diisi!");
+        function add() {
+            const j = document.getElementById('j').value, k = document.getElementById('k').value, t = document.getElementById('t').value;
+            if(j && t) {
+                db.unshift({name: j, cat: k, text: t});
+                localStorage.setItem('glasshub_mono', JSON.stringify(db));
+                render(currentFilter);
+                document.getElementById('j').value = ''; document.getElementById('t').value = '';
             }
         }
 
-        function deleteData(index) {
-            if(confirm("Hapus teks ini?")) {
-                database.splice(index, 1);
-                saveAndRefresh();
+        function search() { render(currentFilter, document.getElementById('searchBox').value); }
+
+        function filterData(cat, btn) {
+            currentFilter = cat;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            render(cat, document.getElementById('searchBox').value);
+        }
+
+        function del(i) {
+            if(confirm("Discard?")) { 
+                db.splice(i, 1); 
+                localStorage.setItem('glasshub_mono', JSON.stringify(db)); 
+                render(currentFilter); 
             }
         }
 
-        function saveAndRefresh() {
-            localStorage.setItem('myCopyData', JSON.stringify(database));
-            displayData(database);
+        function copyAction(btn, text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            const old = btn.innerText;
+            btn.innerText = "DONE";
+            setTimeout(() => btn.innerText = old, 1000);
         }
-
-        function filterData() {
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            const catVal = document.getElementById('categoryFilter').value;
-
-            const filtered = database.filter(item => {
-                const matchSearch = item.name.toLowerCase().includes(searchVal);
-                const matchCat = (catVal === 'all') || (item.cat === catVal);
-                return matchSearch && matchCat;
-            });
-            displayData(filtered);
-        }
-
-        function copyText(txt) {
-            navigator.clipboard.writeText(txt).then(() => {
-                alert("Berhasil disalin!");
-            });
-        }
-
-        // Tampilkan data saat pertama kali buka
-        displayData(database);
+        render();
     </script>
 </body>
-</html>
+    </html>
